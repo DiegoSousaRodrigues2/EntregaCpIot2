@@ -15,7 +15,7 @@ def talk(text):
 def comando():
     try:
         with sr.Microphone() as source:
-            talk("Sim mestre. O que posso fazer")
+            recon.adjust_for_ambient_noise(source)
             audio = recon.listen(source)
             command = recon.recognize_google(audio, language='pt')
             command = command.lower()
@@ -25,9 +25,8 @@ def comando():
 
 
 def aguardando_sexta_feira():
-    try:
-        with sr.Microphone() as source:
-            command = ""
+    with sr.Microphone() as source:
+        try:
             while True:
                 print("pode falar")
                 audio = recon.listen(source)
@@ -35,9 +34,10 @@ def aguardando_sexta_feira():
                 command = command.lower()
                 print(command)
                 if command == "ok sexta-feira":
-                    return True
-    except:
-        pass
+                    talk("Sim mestre. O que posso fazer")
+                    main()
+        except:
+            pass
 
 
 def cadastrar_evento_na_agenda():
@@ -76,24 +76,32 @@ def ler_arquivo():
 
 def main():
     try:
-        while not aguardando_sexta_feira():
-            aguardando_sexta_feira()
-        command = comando()
-        print(command)
-        if command in 'data':
-            d1 = datetime.today().strftime('%d-%m-%Y')
-            talk(d1)
-        elif command in 'cadastrar evento' or command == 'cadastrar evento':
-            cadastrar_evento_na_agenda()
-        elif command in 'agenda' or command == 'ler agenda' or command == 'ver agenda':
-            texto_para_falar = ler_arquivo()
-            talk(texto_para_falar)
-        else:
-            talk("Não entendi, poderia repetir por favor")
+        while True:
+            command = comando()
+            print(command)
+            if command in 'data':
+                d1 = datetime.today().strftime('%d-%m-%Y')
+                talk(d1)
+                return
+            elif command in 'cadastrar evento' or command == 'cadastrar evento':
+                cadastrar_evento_na_agenda()
+                return
+            elif command in 'agenda' or command == 'ler agenda' or command == 'ver agenda':
+                texto_para_falar = ler_arquivo()
+                talk(texto_para_falar)
+                return
+            elif 'solteira' in command or command == 'você esta solteira':
+                talk('Eu estou em um relacionamento com o wi-fi')
+                return
+            elif 'encontro' in command:
+                talk('desculpe, estou com dor de cabeca')
+                return
+            else:
+                talk("Não entendi, poderia repetir por favor")
 
     except:
         pass
 
 
 while True:
-    main()
+    aguardando_sexta_feira()
