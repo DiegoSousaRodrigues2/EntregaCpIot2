@@ -1,6 +1,7 @@
 import speech_recognition as sr
 import pyttsx3
 from datetime import datetime
+from unidecode import unidecode
 
 recon = sr.Recognizer()
 engine = pyttsx3.init()
@@ -27,54 +28,66 @@ def aguardando_sexta_feira():
     try:
         with sr.Microphone() as source:
             command = ""
-            while command != "ok sexta-feira":
+            while True:
+                print("pode falar")
                 audio = recon.listen(source)
                 command = recon.recognize_google(audio, language='pt')
                 command = command.lower()
-                return
+                print(command)
+                if command == "ok sexta-feira":
+                    return True
     except:
         pass
+
+
+def cadastrar_evento_na_agenda():
+    try:
+        with sr.Microphone() as source:
+            talk("Okay pode me falar o que devo agendar")
+            audio = recon.listen(source)
+            command = recon.recognize_google(audio, language='pt')
+            command = command.lower()
+            cadastrar_aquivo(command)
+    except:
+        pass
+
+
+def cadastrar_aquivo(compromisso):
+    arquivo = open('agenda.txt', 'w')
+    arquivo.write(unidecode(compromisso))
+    arquivo.close()
+    print("cadastrado")
+
+
+def ler_arquivo():
+    texto_para_falar = []
+    arquivo = open('agenda.txt', 'r')
+    for linha in arquivo:
+        texto_para_falar.append(linha.strip())
+    arquivo.close()
+    talk(texto_para_falar)
+    print("pomba")
 
 
 def main():
     try:
-        aguardando_sexta_feira()
+        while not aguardando_sexta_feira():
+            aguardando_sexta_feira()
         command = comando()
-        if "data" in command:
+        print(command)
+        if command in 'data':
             d1 = datetime.today().strftime('%d-%m-%Y')
-            print(d1)
             talk(d1)
+        elif command in 'cadastrar evento' or command == 'cadastrar evento':
+            cadastrar_evento_na_agenda()
+        elif command in 'agenda' or command == 'ler agenda' or command == 'ver agenda':
+            ler_arquivo()
         else:
             talk("Não entendi, poderia repetir por favor")
+
     except:
         pass
 
 
-main()
-
-# def talk(text):
-#     engine.say(text)
-#     engine.runAndWait()
-#
-#
-# def wait_command():
-#     try:
-#         with sr.Microphone() as source:
-#             print('Fale algo')
-#             audio = recon.listen(source)
-#             command = command.lower()
-#             if 'alexa' in command:
-#                 command = command.replace('alexa', '')
-#                 print(command)
-#                 return command
-#     except:
-#         pass
-#
-# def run_sexta():
-#     command = wait_command()
-#     if command == 'sla':
-#         engine.say('Teste')
-#         engine.runAndWait()
-#
-# while True:
-#     run_sexta()
+while True:
+    main()
