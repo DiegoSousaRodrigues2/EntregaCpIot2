@@ -53,10 +53,16 @@ def cadastrar_evento_na_agenda():
 
 
 def cadastrar_aquivo(compromisso):
-    arquivo = open('agenda.txt', 'w')
-    arquivo.write(unidecode(compromisso))
-    arquivo.close()
-    print("cadastrado")
+    if len(ler_arquivo()) == 0:
+        arquivo = open('agenda.txt', 'w')
+        arquivo.write(unidecode(compromisso, '\n'))
+        arquivo.close()
+        print("cadastrado")
+    else:
+        arquivo = open('agenda.txt', 'a')
+        arquivo.write(unidecode(compromisso, '\n'))
+        arquivo.close()
+        print("incrementado")
 
 
 def ler_arquivo():
@@ -65,8 +71,7 @@ def ler_arquivo():
     for linha in arquivo:
         texto_para_falar.append(linha.strip())
     arquivo.close()
-    talk(texto_para_falar)
-    print("pomba")
+    return texto_para_falar
 
 
 def main():
@@ -81,7 +86,8 @@ def main():
         elif command in 'cadastrar evento' or command == 'cadastrar evento':
             cadastrar_evento_na_agenda()
         elif command in 'agenda' or command == 'ler agenda' or command == 'ver agenda':
-            ler_arquivo()
+            texto_para_falar = ler_arquivo()
+            talk(texto_para_falar)
         else:
             talk("Não entendi, poderia repetir por favor")
 
