@@ -1,3 +1,4 @@
+# https://github.com/DiegoSousaRodrigues2/EntregaCpIot2
 import speech_recognition as sr
 import pyttsx3
 from datetime import datetime
@@ -128,7 +129,7 @@ def limpar_agenda():
 def listar_compromisso_dicionario():
     key = []
     linha_key = []
-    for a in range(1, len(ler_arquivo())+1):
+    for a in range(1, len(ler_arquivo()) + 1):
         key.append(a)
         linha_key.append('linha' + str(a))
 
@@ -157,7 +158,7 @@ def apagar_compromisso(lista, quant_linha):
 def valid_numero_linha(command, quant_linha, lista):
     try:
         command = int(command)
-        if type(command) == int and 0 < command < quant_linha+1:
+        if type(command) == int and 0 < command < quant_linha + 1:
             apagar_linha(command, lista)
         else:
             talk("Linha não existe")
